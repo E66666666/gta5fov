@@ -1,11 +1,10 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
 #include <math.h>
 #include <Windows.h>
 #include <Psapi.h>
 
+#include "GTA5FoV.h"
 #include "patches.h"
 
 #define LOG(msg, ...) if (haveLog) { fprintf(logfile, msg, __VA_ARGS__); fflush(logfile); }
@@ -109,10 +108,16 @@ bool iniReadFloat(const char *section, const char *name, float *out)
 	return (*out != HUGE_VALF && *out != -HUGE_VALF);
 }
 
-DWORD WINAPI fovfix(LPVOID lpParameter)
+int notify(char *message, bool blinking = false)
 {
-	Sleep(30 * 1000);
+	UI::_SET_NOTIFICATION_TEXT_ENTRY("STRING");
+	UI::_0x5F68520888E69014(message); //_ADD_TEXT_COMPONENT_STRING3
 
+	return UI::_DRAW_NOTIFICATION(blinking, true);
+}
+
+void fixFOV()
+{
 	if (fopen_s(&logfile, "fov-log.txt", "w") == EINVAL || logfile == NULL) haveLog = false;
 	else haveLog = true;
 	LOG("Logging initialised\r\n");
@@ -153,8 +158,15 @@ DWORD WINAPI fovfix(LPVOID lpParameter)
 	goto exit;
 
 err:
-	MessageBoxA(NULL, "FOV Fix has encountered an issue", NULL, MB_OK | MB_ICONWARNING);
+	MessageBoxA(NULL, "GTA5FoV has encountered an issue", NULL, MB_OK | MB_ICONWARNING);
 exit:
+	notify("Successfully set FOV");
 	if (logfile) fclose(logfile);
-	return 0;
+}
+
+void ScriptMain()
+{
+	while (CAM::IS_SCREEN_FADED_OUT() || UI::_IS_LOADING_PROMPT_BEING_DISPLAYED() || !PLAYER::IS_PLAYER_PLAYING(PLAYER::PLAYER_ID()) || !ENTITY::DOES_ENTITY_EXIST(PLAYER::PLAYER_PED_ID())) WAIT(1000);
+
+	fixFOV();
 }

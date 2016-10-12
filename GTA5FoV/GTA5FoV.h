@@ -1,3 +1,9 @@
 #pragma once
 
-DWORD WINAPI fovfix(LPVOID);
+#include "..\..\..\inc\natives.h"
+#include "..\..\..\inc\types.h"
+#include "..\..\..\inc\enums.h"
+
+#include "..\..\..\inc\main.h"
+
+void ScriptMain();
