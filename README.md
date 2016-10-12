@@ -1,5 +1,5 @@
 # gta5fov
-A fork of the GTA V FoV mod for use with ScriptHook V.
+A fork of the GTA V FoV mod for use with Script Hook V.
 
 (Mostly) Original readme follows...
 
